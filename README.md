@@ -1,2 +1,0 @@
-# labelr
-automatic data labeling
