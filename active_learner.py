@@ -1,4 +1,5 @@
-from utils.dspy_agent import DSPyAgent
+from dspy.predict import aggregation
+from utils.gemini_agent import GeminiAgent
 
 class ActiveLearner():
     """This is the active learning agent. We aim to use this as a machine-human interface
@@ -16,13 +17,13 @@ class ActiveLearner():
         self.unlabeled_data = unlabeled_data
         self.batch_size = len(unlabeled_data) // num_learning_iterations
 
-        self.agent = DSPyAgent()
+        self.agents = [GeminiAgent() for i in range(20)]
     
     def predict_label(self, input):
         """Must also return a confidence score.
         """
-        print(self.agent.forward(input))
-        return 
+        # Get consensus and return it.
+        return aggregation.majority([agent.forward(input) for agent in self.agents])
 
     def gather_human_feedback(self, data_lst=[]):
         """This will go through the list and find all elements with a low threshold score
@@ -39,7 +40,17 @@ class ActiveLearner():
     def learn(self):
         self.fine_tune_model(self.init_training_data)
         for iteration in range(self.num_learning_iterations):
-            self.predict_label(self.task)
+            print("=====")
+            print("=====")
+            print("=====")
+            print("=====")
+            print("=====")
+            print(self.predict_label(self.task))
+            print("=====")
+            print("=====")
+            print("=====")
+            print("=====")
+            print("=====")
             # pre_label_batch = self.unlabeled_data[i * self.batch_len:(i + 1) * self.batch_len]
             # post_label_batch = [self.predict_label(inp) for inp in self.pre_label_batch]
             # human_refined_labels = self.gather_human_feedback(post_label_batch)
