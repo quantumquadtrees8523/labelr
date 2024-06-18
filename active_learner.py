@@ -17,7 +17,7 @@ class ActiveLearner():
         self.unlabeled_data = unlabeled_data
         self.batch_size = len(unlabeled_data) // num_learning_iterations
 
-        self.agents = [GeminiAgent() for i in range(20)]
+        self.agents = [GeminiAgent() for i in range(5)]
     
     def predict_label(self, input):
         """Must also return a confidence score.
