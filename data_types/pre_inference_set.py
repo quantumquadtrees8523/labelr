@@ -4,7 +4,7 @@ import uuid
 class PreInferenceSet():
     def __init__(self, filename: str):
         self.input_filename = filename
-        self.dataset_df: pd.DataFrame = pd.read_csv(filename)
+        self.dataset_df: pd.DataFrame = pd.read_csv(filename, sep='\t')
         self.dataset_df['record_id'] = [uuid.uuid4() for i in range(self.dataset_df.shape[0])]
 
     # Function to get specific columns by index.
@@ -25,6 +25,8 @@ class PreInferenceSet():
             return row
         else:
             raise StopIteration
-    
+        
+    def __getitem__(self, index):
+        return self.dataset_df.iloc[index]
 
         

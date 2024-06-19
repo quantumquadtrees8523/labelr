@@ -13,7 +13,7 @@ class InferencePipeline:
         self.feature_id = uuid.uuid4()
 
     def run(self) -> bool:
-        for record in self.pre_inference_set:
+        for record in self.pre_inference_set[:1]:
             try:
                 pred: Prediction = self.inference(record)
                 self.post_inference_set.add_record(record.record_id, self.feature_id, pred)
@@ -27,5 +27,5 @@ class InferencePipeline:
     
     def commit(self) -> bool:
         post_inference_df: pd.DataFrame = self.post_inference_set.get_write_format()
-        post_inference_df.to_csv(self.pre_inference_set.input_filename + "_RESULT.csv")
+        post_inference_df.to_csv(self.pre_inference_set.input_filename[:-5] + "_RESULT.csv")
         return True
