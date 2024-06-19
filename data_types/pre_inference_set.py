@@ -7,7 +7,6 @@ class PreInferenceSet():
         return self.dataset_df.columns[index]
     
     def __init__(self, filename: str):
-        super().__init__()
         self.dataset_df: pd.DataFrame = pd.read_csv(filename)
         self.dataset_df['record_id'] = [uuid.uuid4() for i in range(self.dataset_df.shape[0])]
         # Unsure if we will need this logic in the future.
@@ -23,6 +22,18 @@ class PreInferenceSet():
 
     def get_row(self, index) -> pd.DataFrame:
         return self.dataset_df.iloc[index]
+    
+    def __iter__(self):
+        self.index: int = 0  # Reset the index for a new iteration
+        return self
+
+    def __next__(self) -> pd.Series:
+        if self.index < len(self.dataset_df):
+            row = self.dataset_df.iloc[self.index]
+            self.index += 1
+            return row
+        else:
+            raise StopIteration
     
 
         
