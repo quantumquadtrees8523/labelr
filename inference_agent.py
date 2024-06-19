@@ -1,20 +1,20 @@
 import pandas as pd
+import dspy
+
 from dspy.predict import aggregation
 from language_model_utils.gemini_client import GeminiClient
 
 
 class InferenceAgent():
-    """This is the active learning agent. We aim to use this as a machine-human interface
-    that will allow us to properly label the datapoints that the machine is least confident
-    about.
+    """
     """
 
-    def __init__(self, write_filename, inference_data):
+    def __init__(self, write_filename, inference_data, signature: dspy.Signature):
         """All incoming inputs must be pre-processed and cleaned.
         """
         self.write_filename = write_filename
         self.inference_data = inference_data
-        self.agents = [GeminiClient() for i in range(1)]
+        self.agents = [GeminiClient(signature) for i in range(1)]
 
     
     def predict_label_by_majority_vote(self, input):
