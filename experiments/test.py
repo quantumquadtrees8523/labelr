@@ -1,5 +1,5 @@
 from inference_agent import InferenceAgent
-from my_dataset import MyDataset
+from data_types.my_dataset import MyDataset
 
 """
 Experiment 1 Details:
@@ -19,9 +19,9 @@ Pretty much 100%
 """
 # This is the core file the test is based on. The results that will be created
 # are predictions of the text field in the below file.
-dataset = MyDataset('datasets/data/ecommerceDataset.csv')
+# dataset = MyDataset('datasets/data/ecommerceDataset.csv')
 
-NUM_LEARNING_ITERATIONS = 1
-print(len(dataset.train))
-learner = InferenceAgent('datasets/data/ecommerceDataset_results.csv', NUM_LEARNING_ITERATIONS, dataset.train)
-learner.learn()
+# NUM_LEARNING_ITERATIONS = 1
+# print(len(dataset.train))
+# learner = InferenceAgent('datasets/data/ecommerceDataset_results.csv', NUM_LEARNING_ITERATIONS, dataset.train)
+# learner.learn()
