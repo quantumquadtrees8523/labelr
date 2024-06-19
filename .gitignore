@@ -5,3 +5,4 @@ __pycache__/
 .vscode/
 assertion.log
 azure_openai_usage.log
+openai_usage.log
