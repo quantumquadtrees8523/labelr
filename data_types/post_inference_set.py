@@ -10,7 +10,7 @@ class PostInferenceSet:
     
     def add_record(self, record_id: UUID, feature_id: UUID, prediction):
         # For this to work the signature of the dspy agent must return `label`.`
-        post_inference_record: dict = {'record_id': record_id, 'feature_id': feature_id, 'llm_inference': prediction.label, 'llm_rationale': prediction.rationale}
+        post_inference_record: dict = {'record_id': record_id, 'feature_id': feature_id, 'llm_inference': prediction.llm_inference, 'llm_rationale': prediction.rationale}
         self.dataset_df: pd.DataFrame = pd.concat([self.dataset_df, pd.DataFrame([post_inference_record])], ignore_index=True)
 
     def get_write_format(self) -> pd.DataFrame:

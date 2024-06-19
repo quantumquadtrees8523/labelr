@@ -3,7 +3,7 @@ from signatures.ecommerce.ecommerce_classification_signature import EcommerceCla
 import dspy
 
 class GeminiClient(dspy.Module):
-    def __init__(self, dspy_signature: dspy.Signature) -> None:
+    def __init__(self, dspy_signature) -> None:
         # Gemini secret key: AIzaSyD0uKjqm0mzflAQkMlhnihPymXg9-c2UO8
         # Set up the LM
         super().__init__()
