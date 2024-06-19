@@ -1,0 +1,7 @@
+__pycache__/
+.DS_Store
+.env
+.ssh/
+.vscode/
+assertion.log
+azure_openai_usage.log
