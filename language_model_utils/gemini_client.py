@@ -3,7 +3,7 @@ from signatures.ecommerce.ecommerce_classification_signature import EcommerceCla
 import dspy
 
 class GeminiClient(dspy.Module):
-    def __init__(self, dspy_signature) -> None:
+    def __init__(self, dspy_signature: type[dspy.Signature]) -> None:
         # Gemini secret key: AIzaSyD0uKjqm0mzflAQkMlhnihPymXg9-c2UO8
         # Set up the LM
         super().__init__()
@@ -13,6 +13,8 @@ class GeminiClient(dspy.Module):
         dspy.settings.configure(lm=gemini, max_tokens=1024)
         self.prog = dspy.ChainOfThought(dspy_signature)
 
-    def forward(self, input: dict) -> dspy.Prediction:
+    def forward(self, input_dict: dict) -> dspy.Prediction:
         # ** unpacking dictionary
-        return self.prog(**input)
+        for key in input_dict:
+            input_dict[key] = str(input_dict[key])
+        return self.prog(**input_dict)

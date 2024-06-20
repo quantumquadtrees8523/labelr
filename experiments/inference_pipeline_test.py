@@ -1,4 +1,5 @@
 # script.py
+import time
 from data_types.pre_inference_set import PreInferenceSet
 from inference_pipeline import InferencePipeline
 import dspy
@@ -15,22 +16,40 @@ these outputs look clean.
 
 # Current design choice is to use different inference pipelines for each signature. Multi-process it.
 # You will still be bottlenecked by model builder api rate limiting. 
-class ReviewSentimentSignature(dspy.Signature):
-    """Classify review from unhappiest 1 to happiest 5."""
-    Review = dspy.InputField()
-    llm_inference = dspy.OutputField(desc="Classify Review from unhappiest 1 to happiest 5.")
+# class ReviewSentimentSignature(dspy.Signature):
+#     """Classify review from unhappiest 1 to happiest 5."""
+#     Review = dspy.InputField()
+#     llm_inference = dspy.OutputField(desc="Classify Review from unhappiest 1 to happiest 5.")
 
-class EcommerceClassificationSignature(dspy.Signature):
-    """Classify the text based on the provided context."""
-    text = dspy.InputField(desc="product text.")
-    llm_inference = dspy.OutputField(desc="category of product among 'Household', 'Books', 'Clothing & Accessories', 'Electronics' based on text.")
+# class EcommerceClassificationSignature(dspy.Signature):
+#     """Classify the text based on the provided context."""
+#     text = dspy.InputField(desc="product text.")
+#     llm_inference = dspy.OutputField(desc="category of product among 'Household', 'Books', 'Clothing & Accessories', 'Electronics' based on text.")
+
+# class ResumeClassificationSignature(dspy.Signature):
+#     """Classify the resume based on the provided context."""
+#     Resume = dspy.InputField(desc="Resume text.")
+#     llm_inference = dspy.OutputField(desc="single specialty of resume among broad skill categories based on text. For example, Data Science or Sales.")    
 
 def main():
-    # input_filename = '/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/Restaurant_Reviews.tsv'
-    InferencePipeline(PreInferenceSet('/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/Restaurant_Reviews.tsv'), ReviewSentimentSignature) #.run()
+    restaurants_dataset = '/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/Restaurant_Reviews.tsv'
+    # there should be a way to 
+    ip_1 = InferencePipeline(PreInferenceSet(restaurants_dataset), output_filename="cuisine", output_description="the cuisine of the restaurant referenced.").run()
+    ip_2 = InferencePipeline(PreInferenceSet(restaurants_dataset), task="extract", output_filename="foods", output_description="the foods that are referenced or an empty string ('')").run()
+    pass
+    # start_time = time.time()
+    # # input_filename = '/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/Restaurant_Reviews.tsv'
+    # InferencePipeline(PreInferenceSet('/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/Restaurant_Reviews.tsv'), ReviewSentimentSignature).run()
+    # print(time.time() - start_time)
 
-    # input_filename = '/Users/suryaduggirala/projects/llm-labeling/datasets/ecommerce/ecommerceDataset.csv'
-    InferencePipeline(PreInferenceSet('/Users/suryaduggirala/projects/llm-labeling/datasets/ecommerce/ecommerceDataset.csv'), EcommerceClassificationSignature) #.run()
+    # start_time = time.time()
+    # # input_filename = '/Users/suryaduggirala/projects/llm-labeling/datasets/ecommerce/ecommerceDataset.csv'
+    # InferencePipeline(PreInferenceSet('/Users/suryaduggirala/projects/llm-labeling/datasets/ecommerce/ecommerceDataset.csv'), EcommerceClassificationSignature).run()
+    # print(time.time() - start_time)
+
+    # start_time = time.time()
+    # InferencePipeline(PreInferenceSet('/Users/suryaduggirala/projects/llm-labeling/datasets/inference_pipeline_tests/UpdatedResumeDataSet.csv'), ResumeClassificationSignature).run()
+    # print(time.time() - start_time)
 
 if __name__ == "__main__":
     main()
