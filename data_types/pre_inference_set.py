@@ -24,6 +24,10 @@ class PreInferenceSet():
             return row
         else:
             raise StopIteration
+    
+    def __len__(self):
+        return len(self.dataset_df)
+    
         
     def get_columns(self) -> List:
         return self.dataset_df.columns.to_list()

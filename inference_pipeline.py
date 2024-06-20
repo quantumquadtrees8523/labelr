@@ -9,20 +9,15 @@ from data_types.post_inference_set import PostInferenceSet
 from data_types.pre_inference_set import PreInferenceSet
 from language_model_utils.gemini_client import GeminiClient
 import traceback
-
-# class QuerySignature(dspy.Signature):
-#         def __init__(self, csv_column_names, task, output_name, output_description):
-#             inputs_dict: dict = dspy.Signature.
-#             inputs_dict['task'] = task
-#             for column_name in csv_column_names:
-#                 inputs_dict[column_name] = dspy.InputField()
-#             inputs_dict[output_name] = dspy.OutputField()
-#             self.__class__.__doc__ = output_description
-#             s = dspy.Signature(inputs_dict)
+from elasticsearch import Elasticsearch
+from elasticsearch.helpers import bulk
 
 class InferencePipeline:
 
     def __init__(self, pre_inference_set: PreInferenceSet, task="classification", output_filename="DEFAULT", output_description="label description", num_agents=1) -> None:
+        print("task: " + task)
+        print("output filename: " + output_filename)
+        print("output: " + output_description)
         self.pre_inference_set = pre_inference_set
         columns: List = self.pre_inference_set.get_columns()
         instructions_dict: dict = dict()
@@ -35,24 +30,45 @@ class InferencePipeline:
         self.agents = [GeminiClient(signature) for i in range(num_agents)]
         self.post_inference_set = PostInferenceSet()
         self.feature_id = uuid.uuid4()
+        self.commit(self.pre_inference_set.dataset_df, output_filename + "SOURCE")
 
     def run(self) -> bool:
+        print("predicting ", str(len(self.pre_inference_set)) + " records.")
+        print("-------")
         for index, record in enumerate(self.pre_inference_set):
-            print("predicting record #: ", index)
             try:
                 pred: Prediction = self.inference(record)
                 # This `str` of the record name is duct tape. how do you actually want to store it?
                 self.post_inference_set.add_record(str(record.name), self.feature_id, pred)
-            except Exception:
-                print(traceback.print_exc())
+            except:
+                traceback.print_exc()
 
-        return self.commit()
+        return self.commit(self.post_inference_set.dataset_df, self.output_filename + "RESULT")
 
     def inference(self, record: pd.Series) -> Prediction:
         # Get consensus and return it.
         return aggregation.majority([agent.forward(record.to_dict()) for agent in self.agents])
     
-    def commit(self) -> bool:
-        post_inference_df: pd.DataFrame = self.post_inference_set.get_write_format()
-        post_inference_df.to_csv(self.pre_inference_set.input_filename[:-4] + "_" + self.output_filename + "_RESULT.csv")
+    def commit(self, df: pd.DataFrame, index_name: str) -> bool:
+        es = Elasticsearch([{'host': 'localhost', 'port': 9200, 'scheme': 'http'}])
+        # indices = es.indices.get_alias(index=self.output_filename + index_name)
+        # This is bad logic. It's overly general and you are only deleting the one index
+        # Modify this.
+        # for index in indices:
+        #     # Delete each non-system index
+        #     es.indices.delete(index=index)
+        #     print(f"Deleted index: {index}")
+        actions = [
+            {
+                "_index": index_name,
+                "_source": row.to_dict()
+            }
+            for _, row in df.iterrows()
+        ]
+        # Use the bulk helper function to index data
+        bulk(es, actions)
+        # try:
+        #     bulk(es, actions)
+        # except:
+        #     print("ERROR COMMITTING TO ELASTICSEARCH.")
         return True
